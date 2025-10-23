@@ -5,7 +5,7 @@ from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 from typing import Optional
 
-from agent_runner import AgentRunner
+from agent_runner import run_agent
 
 app = FastAPI()
 
@@ -17,13 +17,11 @@ formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(messag
 console_handler.setFormatter(formatter)
 logger.addHandler(console_handler)
 
-
-agent = AgentRunner()
 class QueryIn(BaseModel):
     query: str
     session_id: str | None = None
 
 @app.post("/query")
 async def query_endpoint(payload: QueryIn):
-    result = await agent.run(payload.query, session_id=payload.session_id)
+    result = await run_agent(payload.query, session_id=payload.session_id)
     return result
